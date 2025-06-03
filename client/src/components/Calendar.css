@@ -1,0 +1,66 @@
+.fc-view {
+  background-color: white;
+  color: #354e53;
+}
+
+@media (max-width: 576px) {
+  .fc-toolbar-title {
+    font-size: x-large !important;
+  }
+  .fc-more-link {
+    display: none;
+  }
+}
+.fc-daygrid-dot-event {
+  display: none;
+  pointer-events: none;
+}
+
+.fc-daygrid-block-event {
+  margin-top: 0px !important;
+  pointer-events: none;
+  width: 100%;
+}
+
+.fc-daygrid-day-events {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.fc-event-title-container {
+  font-size: x-small;
+  font-weight: bold;
+}
+.fc-daygrid-event-harness {
+  margin-top: 0px !important;
+  width: 50%;
+  flex: 0 0 50%;
+  max-width: 49%;
+  box-sizing: border-box;
+}
+
+.fc-col-header {
+  background-color: #546a77;
+  color: white;
+}
+
+.btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #567c69;
+  --bs-btn-border-color: #567c69;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #466556;
+  --bs-btn-hover-border-color: #466556;
+  --bs-btn-focus-shadow-rgb: 130, 138, 145;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #3a5447;
+  --bs-btn-active-border-color: #51585e;
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #567c69;
+  --bs-btn-disabled-border-color: #567c69;
+}
+
+.fc {
+  margin-top: 1.5rem !important;
+}

@@ -1,42 +1,107 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+::-webkit-scrollbar {
+  display: none;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+nav {
+  width: 100%;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.navbar {
+  background-color: rgb(33, 48, 54);
 }
 
-.card {
-  padding: 2em;
+.navbar-nav .dropdown-menu {
+  position: absolute !important;
 }
 
-.read-the-docs {
-  color: #888;
+.profileImg {
+  max-height: 250px;
+  max-width: 100%;
+  padding: 0.25rem;
+  border: 1px solid var(--bs-border-color);
+  background-color: #fff;
+  border-radius: 0.375rem;
+}
+
+.bablyGreen {
+  background-color: #567c69;
+  color: white;
+}
+.bablyGrey {
+  background-color: #546a77;
+}
+
+.bablyBlue {
+  background-color: #659aab;
+  color: white;
+}
+
+.bablyColor {
+  background-color: #516768;
+}
+
+.bablyBabyBlue {
+  background-color: #b4ced6;
+}
+
+.bablyOffWhite {
+  background-color: #eefaf7;
+  color: #546a77;
+  font-weight: bold;
+}
+
+.bablyRed {
+  background-color: rgb(129, 29, 29);
+  color: white;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.lgSwitch {
+  width: 3em !important;
+  height: 1.5em;
+}
+
+.wThird {
+  width: 33%;
+}
+
+.nav-tabs li button {
+  color: rgb(15, 14, 14) !important;
+}
+
+.nav-tabs {
+  background-color: #c8cdcd;
+}
+
+.bablyBg {
+  width: 100vw;
+  height: 100vh;
+  opacity: 0.7;
+  object-fit: cover;
+  z-index: -1;
+  position: absolute;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 56px);
+}
+.content {
+  flex: 1;
+}
+.buttons {
+  width: 100%;
 }
