@@ -1,29 +1,28 @@
 stages:
   - deploy
 
-variables:
-  EC2_HOST: "api.bablyapp.com"
-  EC2_USER: "ec2-user
-  SSH_KEY_PATH: ".ci/keys/deploy_key"
-
-before_script:
-  - eval $(ssh-agent -s)
-  - chmod 600 $SSH_KEY_PATH
-  - echo "Adding deploy key to agent..."
-  - ssh-add $SSH_KEY_PATH
-  - mkdir -p ~/.ssh
-  - echo -e "Host *\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
-
-deploy:
+deploy_backend:
   stage: deploy
-  script:
-    - echo "Deploying to $EC2_HOST"
-    - ssh $EC2_USER@$EC2_HOST "pm2 stop all || true"
-    - rsync -avz --exclude '.git' --exclude 'node_modules' ./ $EC2_USER@$EC2_HOST:~/app/
-    - ssh $EC2_USER@$EC2_HOST <<EOF
-        cd ~/app &&
-        npm install &&
-        pm2 start ecosystem.config.js || pm2 restart ecosystem.config.js
-      EOF
   only:
     - working_branch
+  before_script:
+    - apt-get update -y && apt-get install -y openssh-client rsync
+    - eval $(ssh-agent -s)
+    # Use the deploy key instead of SSH_PRIVATE_KEY environment variable
+    - echo "$DEPLOY_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    # Replace with your actual EC2 instance IP/hostname
+    - ssh-keyscan api.bablyapp.com >> ~/.ssh/known_hosts
+  script:
+    # Rsync backend only
+    - echo "Deploying /server to EC2"
+    # Replace with your actual EC2 instance IP/hostname
+    - rsync -avzr --delete server/ ec2-user@api.bablyapp.com:/home/ec2-user/project/
+    # Run setup commands on EC2
+    - ssh ec2-user@api.bablyapp.com <<EOF
+        cd /home/ec2-user/project
+        sh scripts/ec2env.sh
+        pnpm install
+        pnpm run db:import
+        pm2 start --time pnpm -- start
+      EOF
