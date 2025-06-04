@@ -4,3 +4,5 @@ server/.env
 server/.env
 client/build
 node_modules
+!.ci/keys/deploy_key
+.ci/keys/deploy_key.pub
