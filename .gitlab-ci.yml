@@ -8,22 +8,18 @@ deploy_backend:
   before_script:
     - apt-get update -y && apt-get install -y openssh-client rsync
     - eval $(ssh-agent -s)
-    # Debug the key format issue
-    - echo "Debug: Key starts with:"
+    - echo "Debug - Key starts with:"
     - echo "$DEPLOY_KEY" | head -1
-    - echo "Debug: Key ends with:"
+    - echo "Debug - Key ends with:"
     - echo "$DEPLOY_KEY" | tail -1
-    # Try direct approach first
     - printf '%s\n' "$DEPLOY_KEY" > /tmp/deploy_key
     - chmod 600 /tmp/deploy_key
     - ssh-add /tmp/deploy_key
     - mkdir -p ~/.ssh
     - ssh-keyscan api.bablyapp.com >> ~/.ssh/known_hosts
   script:
-    # Rsync backend only
     - echo "Deploying /server to EC2"
     - rsync -avzr --delete server/ ec2-user@api.bablyapp.com:/home/ec2-user/project/
-    # Run setup commands on EC2
     - ssh ec2-user@api.bablyapp.com <<EOF
         cd /home/ec2-user/project
         sh scripts/ec2env.sh
