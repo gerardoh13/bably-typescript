@@ -8,21 +8,22 @@ deploy_backend:
   before_script:
     - apt-get update -y && apt-get install -y openssh-client rsync
     - eval $(ssh-agent -s)
-    # Use the deploy key instead of SSH_PRIVATE_KEY environment variable
-    - echo "$DEPLOY_KEY" | tr -d '\r' | ssh-add -
+    # Use the deploy key (handle formatting issues like extra newlines)
+    - echo "$DEPLOY_KEY" | sed '/^$/d' | tr -d '\r' > /tmp/deploy_key
+    - chmod 600 /tmp/deploy_key
+    - ssh-add /tmp/deploy_key
     - mkdir -p ~/.ssh
-    # Replace with your actual EC2 instance IP/hostname
     - ssh-keyscan api.bablyapp.com >> ~/.ssh/known_hosts
   script:
     # Rsync backend only
     - echo "Deploying /server to EC2"
-    # Replace with your actual EC2 instance IP/hostname
     - rsync -avzr --delete server/ ec2-user@api.bablyapp.com:/home/ec2-user/project/
     # Run setup commands on EC2
     - ssh ec2-user@api.bablyapp.com <<EOF
         cd /home/ec2-user/project
         sh scripts/ec2env.sh
+        sh database/import.sh
+        cd server
         pnpm install
-        pnpm run db:import
         pm2 start --time pnpm -- start
       EOF
