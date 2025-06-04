@@ -21,6 +21,21 @@ export async function seed() {
         } else {
             console.log("Demo user already exists.");
         }
+        const checkDemoReminders = await db.query(
+            `SELECT * FROM reminders WHERE user_id = $1`,
+            [checkDemo.rows[0]?.id || demoUser?.rows[0]?.id]
+        );
+        if (checkDemoReminders.rows.length === 0) {
+            await db.query(
+                `INSERT INTO reminders (user_id)
+                 VALUES ($1)`,
+                [checkDemo.rows[0]?.id || demoUser?.rows[0]?.id]
+            );
+            console.log("Demo user reminders created.");
+        } else {
+            console.log("Demo user reminders already exist.");
+        }
+        // Check for demo infant
         const checkDemoInfant = await db.query(
             `SELECT * FROM infants WHERE first_name = $1`,
             ["DemoBaby"]

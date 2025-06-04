@@ -30,7 +30,13 @@ function Calendar() {
     const startTimestamp = start.getTime() / 1000;
     const endTimestamp = end.getTime() / 1000;
     if (!currChild) return [];
-    let events = await BablyApi.getEvents(currChild.id, startTimestamp, endTimestamp);
+    let events;
+    if (currUser?.email === "demo@demo.com") {
+      // For demo purposes, return static data
+      events = await BablyApi.getEvents(currChild.id, 0, 1);
+    } else {
+      events = await BablyApi.getEvents(currChild.id, startTimestamp, endTimestamp);
+    }
     const uniqueFeedDates = new Set(
       events.feeds.map((d: any) =>
         new Date(d.start)

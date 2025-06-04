@@ -1,4 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import type { UserContextType } from "../users/UserContext";
+import UserContext from "../users/UserContext";
 import Alerts from "../common/Alerts";
 
 type RemindersProps = {
@@ -14,6 +16,7 @@ type RemindersProps = {
   setCurrUser: (user: any) => void;
 };
 
+
 function Reminders({ reminders, update, setCurrUser }: RemindersProps) {
   const [formData, setFormData] = useState({
     hours: reminders.hours,
@@ -27,6 +30,9 @@ function Reminders({ reminders, update, setCurrUser }: RemindersProps) {
   const [errs, setErrs] = useState<string[]>([]);
   const [iOS, setiOS] = useState(false);
 
+  const context = useContext(UserContext) as UserContextType;
+  const currUser = context?.currUser;
+
   useEffect(() => {
     if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
       setErrs(["Coming soon!", "Reminders not currently available on iOS"]);
@@ -39,6 +45,10 @@ function Reminders({ reminders, update, setCurrUser }: RemindersProps) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (currUser?.email === "demo@demo.com") {
+      alert("Demo user cannot change reminders");
+      return;
+    }
     setMsgs([]);
     setErrs([]);
     const validTime = validateTime();
@@ -93,8 +103,8 @@ function Reminders({ reminders, update, setCurrUser }: RemindersProps) {
   };
 
   const toLocalTime = (time: string) => {
-    const [h, m] = time.split(":").map((t) => parseInt(t));
-    return `${h % 12 ? h % 12 : 12}:${m} ${h >= 12 ? "PM" : "AM"}`;
+    const [h, m] = time.split(":");
+    return `${+h % 12 ? +h % 12 : 12}:${m} ${+h >= 12 ? "PM" : "AM"}`;
   };
 
   const handleSwitch = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -61,32 +61,38 @@ export default function Reports() {
         <div>
             <h4>Reports</h4>
             <form
+                className="container"
                 onSubmit={handleSubmit}
             >
                 <div className="row">
-
-                    <label className="col">
-                        Start Date:
+                    <div className="col-6">
+                        <label htmlFor="startDate">
+                            Start Date:
+                        </label>
                         <input
                             className="form-control"
                             type="date"
+                            id="startDate"
                             value={startDate}
                             onChange={handleDateChange}
                             name="startDate"
                             required
                         />
-                    </label>
-                    <label className="col">
-                        End Date:
+                    </div>
+                    <div className="col-6">
+                        <label htmlFor="endDate">
+                            End Date:
+                        </label>
                         <input
                             className="form-control"
+                            id="endDate"
                             type="date"
                             value={endDate}
                             onChange={handleDateChange}
                             name="endDate"
                             required
                         />
-                    </label>
+                    </div>
                 </div>
                 <div className="row mt-3">
                     <div className="col d-flex justify-content-around">

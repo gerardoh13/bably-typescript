@@ -93,7 +93,19 @@ router.get(
     if (res.locals.user.email === "demo@demo.com") {
       // For demo purposes, return static data
       const demoData = getDemoCalendarData();
-      res.json({ events: demoData });
+      if (start === "0" && end === "1") {
+        // If start and end are 0 and 1, return all demo data
+        res.json({ events: demoData });
+      } else {
+        // Filter demo data based on start and end
+        const filteredFeeds = demoData.feeds.filter(
+          (f) => f.start >= +start * 1000 && f.start <= +end * 1000
+        );
+        const filteredDiapers = demoData.diapers.filter(
+          (d) => d.start >= +start * 1000 && d.start <= +end * 1000
+        );
+        res.json({ events: { feeds: filteredFeeds, diapers: filteredDiapers } });
+      }
       return;
     }
     try {
