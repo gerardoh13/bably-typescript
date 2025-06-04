@@ -8,11 +8,28 @@ deploy_backend:
   before_script:
     - apt-get update -y && apt-get install -y openssh-client rsync
     - eval $(ssh-agent -s)
-    - echo "Debug - Key starts with:"
-    - echo "$DEPLOY_KEY" | head -1
-    - echo "Debug - Key ends with:"
-    - echo "$DEPLOY_KEY" | tail -1
-    - printf '%s\n' "$DEPLOY_KEY" > /tmp/deploy_key
+    - echo "Debug - Available environment variables with 'KEY' or 'SSH':"
+    - env | grep -i key || echo "No KEY variables found"
+    - env | grep -i ssh || echo "No SSH variables found"
+    - echo "Debug - Checking for common deploy key variable names:"
+    - echo "DEPLOY_KEY length:" $(echo "$DEPLOY_KEY" | wc -c)
+    - echo "SSH_PRIVATE_KEY length:" $(echo "$SSH_PRIVATE_KEY" | wc -c)
+    - echo "CI_DEPLOY_KEY length:" $(echo "$CI_DEPLOY_KEY" | wc -c)
+    - echo "Trying to use available key..."
+    - |
+      if [ -n "$SSH_PRIVATE_KEY" ]; then
+        echo "Using SSH_PRIVATE_KEY"
+        printf '%s\n' "$SSH_PRIVATE_KEY" > /tmp/deploy_key
+      elif [ -n "$DEPLOY_KEY" ]; then
+        echo "Using DEPLOY_KEY"
+        printf '%s\n' "$DEPLOY_KEY" > /tmp/deploy_key
+      elif [ -n "$CI_DEPLOY_KEY" ]; then
+        echo "Using CI_DEPLOY_KEY"
+        printf '%s\n' "$CI_DEPLOY_KEY" > /tmp/deploy_key
+      else
+        echo "No SSH key found in environment variables"
+        exit 1
+      fi
     - chmod 600 /tmp/deploy_key
     - ssh-add /tmp/deploy_key
     - mkdir -p ~/.ssh
