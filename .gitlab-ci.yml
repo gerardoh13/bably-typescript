@@ -1,0 +1,29 @@
+stages:
+  - deploy
+
+deploy_backend:
+  stage: deploy
+  only:
+    - working_branch
+  variables:
+    EC2_HOST: $EC2_HOST
+  before_script:
+    - apt-get update -y && apt-get install -y openssh-client rsync
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - ssh-keyscan $EC2_HOST >> ~/.ssh/known_hosts
+
+  script:
+    # Rsync backend only
+    - echo "Deploying /server to EC2"
+    - rsync -avzr --delete server/ ec2-user@$EC2_HOST:/home/ec2-user/project/
+
+    # Run setup commands on EC2
+    - ssh ec2-user@$EC2_HOST <<EOF
+        cd /home/ec2-user/project
+        sh scripts/ec2env.sh
+        pnpm install
+        pnpm run db:import
+        pm2 start --time pnpm -- start
+      EOF
