@@ -15,6 +15,7 @@ deploy_backend:
     - "echo 'Debug: Key ends with:'"
     - "tail -1 .ci/keys/deploy_key"
     - "cp .ci/keys/deploy_key /tmp/deploy_key"
+    - "echo '' >> /tmp/deploy_key"
     - "chmod 600 /tmp/deploy_key"
     - "ssh-add /tmp/deploy_key"
     - "mkdir -p ~/.ssh"
