@@ -8,12 +8,6 @@ deploy_backend:
   before_script:
     - "apt-get update -y && apt-get install -y openssh-client rsync"
     - "eval $(ssh-agent -s)"
-    - "echo 'Debug: Key file exists:'"
-    - "ls -la .ci/keys/deploy_key"
-    - "echo 'Debug: Key starts with:'"
-    - "head -1 .ci/keys/deploy_key"
-    - "echo 'Debug: Key ends with:'"
-    - "tail -1 .ci/keys/deploy_key"
     - "cp .ci/keys/deploy_key /tmp/deploy_key"
     - "echo '' >> /tmp/deploy_key"
     - "chmod 600 /tmp/deploy_key"
@@ -22,5 +16,5 @@ deploy_backend:
     - "ssh-keyscan api.bablyapp.com >> ~/.ssh/known_hosts"
   script:
     - "echo 'Deploying project to EC2'"
-    - "rsync -avzr --delete --exclude='.git' --exclude='node_modules' --exclude='.ci' ./ ec2-user@api.bablyapp.com:/home/ec2-user/project/"
+    - "rsync -avzr --delete --exclude='.git' --exclude='node_modules' --exclude='.ci' --exclude='client' ./ ec2-user@api.bablyapp.com:/home/ec2-user/project/"
     - "ssh ec2-user@api.bablyapp.com 'cd /home/ec2-user/project && sh scripts/ec2env.sh && sh database/import.sh && cd server && pnpm install && pm2 start --time pnpm -- start'"
