@@ -2,8 +2,7 @@ import * as PusherPushNotifications from "@pusher/push-notifications-web";
 import BablyApi from "../api";
 
 const BASE_URL =
-  import.meta.env.REACT_APP_BASE_URL ||
-  "http://" + window.location.hostname + ":8080";
+  import.meta.env.VITE_API_URL;
 
 let beamsClient: PusherPushNotifications.Client | null = null;
 if (

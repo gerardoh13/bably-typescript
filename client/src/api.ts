@@ -1,13 +1,13 @@
 import axios from "axios";
 
-const BASE_URL = import.meta.env.REACT_APP_BASE_URL || "http://" + window.location.hostname + ":8080";
+const BASE_URL = import.meta.env.VITE_API_URL;;
 
 
 class BablyApi {
 
-  static token : string;
+  static token: string;
 
-  static async request(endpoint : string, data = {}, method = "get") {
+  static async request(endpoint: string, data = {}, method = "get") {
     // console.debug("API Call:", endpoint, data, method);
 
     const url = `${BASE_URL}/${endpoint}`;
@@ -41,12 +41,12 @@ class BablyApi {
     return res.token;
   }
 
-  static async getCurrUser(email : string) {
+  static async getCurrUser(email: string) {
     let res = await this.request(`users/${email}`);
     return res.user;
   }
 
-  static async resetPwd(token : string, data: any) {
+  static async resetPwd(token: string, data: any) {
     let res = await this.request(
       `users/new-password?token=${token}`,
       data,
@@ -95,7 +95,7 @@ class BablyApi {
     return res.infant;
   }
 
-  static async getTodaysData(infant_id: string, start : string, end : string) {
+  static async getTodaysData(infant_id: string, start: string, end: string) {
     let res = await this.request(`infants/today/${infant_id}/${start}/${end}`);
     return res.today;
   }

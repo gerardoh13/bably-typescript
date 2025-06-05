@@ -2,11 +2,11 @@
 
 require("dotenv").config();
 
-export const SECRET_KEY = process.env.SECRET_KEY || "secret-dev";
+export const SECRET_KEY = process.env.SECRET_KEY;
 
 export const PORT = process.env.PORT ? Number(process.env.PORT) : 8080;
 
-export const REACT_APP_HOST = process.env.REACT_APP_HOST || "http://localhost:5173"
+export const REACT_APP_HOST = process.env.REACT_APP_HOST;
 
 export const NODEMAILER_USER = process.env.NODEMAILER_USER;
 

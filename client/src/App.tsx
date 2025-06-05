@@ -88,10 +88,15 @@ function App() {
   };
 
   const logout = async () => {
+    const email = currUser?.email;
     setCurrUser(null);
     setCurrChild(null);
     setToken("");
     setChildId("");
+    if (email === "demo@demo.com") {
+      console.log("Demo user logged out, not stopping beams.");
+      return;
+    }
     stopBeams();
   };
 
