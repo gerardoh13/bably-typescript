@@ -21,6 +21,6 @@ deploy_backend:
     - "mkdir -p ~/.ssh"
     - "ssh-keyscan api.bablyapp.com >> ~/.ssh/known_hosts"
   script:
-    - "echo 'Deploying /server to EC2'"
-    - "rsync -avzr --delete server/ ec2-user@api.bablyapp.com:/home/ec2-user/project/"
+    - "echo 'Deploying project to EC2'"
+    - "rsync -avzr --delete --exclude='.git' --exclude='node_modules' --exclude='.ci' ./ ec2-user@api.bablyapp.com:/home/ec2-user/project/"
     - "ssh ec2-user@api.bablyapp.com 'cd /home/ec2-user/project && sh scripts/ec2env.sh && sh database/import.sh && cd server && pnpm install && pm2 start --time pnpm -- start'"
