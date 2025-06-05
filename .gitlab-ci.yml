@@ -8,35 +8,24 @@ deploy_backend:
   before_script:
     - apt-get update -y && apt-get install -y openssh-client rsync
     - eval $(ssh-agent -s)
-    - echo "Debug - Available environment variables with 'KEY' or 'SSH':"
-    - env | grep -i key || echo "No KEY variables found"
-    - env | grep -i ssh || echo "No SSH variables found"
-    - echo "Debug - Checking for common deploy key variable names:"
-    - echo "DEPLOY_KEY length:" $(echo "$DEPLOY_KEY" | wc -c)
-    - echo "SSH_PRIVATE_KEY length:" $(echo "$SSH_PRIVATE_KEY" | wc -c)
-    - echo "CI_DEPLOY_KEY length:" $(echo "$CI_DEPLOY_KEY" | wc -c)
-    - echo "Trying to use available key..."
-    - |
-      if [ -n "$SSH_PRIVATE_KEY" ]; then
-        echo "Using SSH_PRIVATE_KEY"
-        printf '%s\n' "$SSH_PRIVATE_KEY" > /tmp/deploy_key
-      elif [ -n "$DEPLOY_KEY" ]; then
-        echo "Using DEPLOY_KEY"
-        printf '%s\n' "$DEPLOY_KEY" > /tmp/deploy_key
-      elif [ -n "$CI_DEPLOY_KEY" ]; then
-        echo "Using CI_DEPLOY_KEY"
-        printf '%s\n' "$CI_DEPLOY_KEY" > /tmp/deploy_key
-      else
-        echo "No SSH key found in environment variables"
-        exit 1
-      fi
+    # Debug the key format issue
+    - echo "Debug: Key file exists:"
+    - ls -la .ci/keys/deploy_key
+    - echo "Debug: Key starts with:"
+    - head -1 .ci/keys/deploy_key
+    - echo "Debug: Key ends with:"
+    - tail -1 .ci/keys/deploy_key
+    # Use the key file directly
+    - cp .ci/keys/deploy_key /tmp/deploy_key
     - chmod 600 /tmp/deploy_key
     - ssh-add /tmp/deploy_key
     - mkdir -p ~/.ssh
     - ssh-keyscan api.bablyapp.com >> ~/.ssh/known_hosts
   script:
+    # Rsync backend only
     - echo "Deploying /server to EC2"
     - rsync -avzr --delete server/ ec2-user@api.bablyapp.com:/home/ec2-user/project/
+    # Run setup commands on EC2
     - ssh ec2-user@api.bablyapp.com <<EOF
         cd /home/ec2-user/project
         sh scripts/ec2env.sh
