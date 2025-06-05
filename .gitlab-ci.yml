@@ -20,15 +20,6 @@ deploy_backend:
     - mkdir -p ~/.ssh
     - ssh-keyscan api.bablyapp.com >> ~/.ssh/known_hosts
   script:
-    # Rsync backend only
     - echo "Deploying /server to EC2"
     - rsync -avzr --delete server/ ec2-user@api.bablyapp.com:/home/ec2-user/project/
-    # Run setup commands on EC2
-    - ssh ec2-user@api.bablyapp.com <<EOF
-        cd /home/ec2-user/project
-        sh scripts/ec2env.sh
-        sh database/import.sh
-        cd server
-        pnpm install
-        pm2 start --time pnpm -- start
-      EOF
+    - ssh ec2-user@api.bablyapp.com "cd /home/ec2-user/project && sh scripts/ec2env.sh && sh database/import.sh && cd server && pnpm install && pm2 start --time pnpm -- start"
