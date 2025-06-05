@@ -8,14 +8,12 @@ deploy_backend:
   before_script:
     - apt-get update -y && apt-get install -y openssh-client rsync
     - eval $(ssh-agent -s)
-    # Debug the key format issue
     - echo "Debug: Key file exists:"
     - ls -la .ci/keys/deploy_key
     - echo "Debug: Key starts with:"
     - head -1 .ci/keys/deploy_key
     - echo "Debug: Key ends with:"
     - tail -1 .ci/keys/deploy_key
-    # Use the key file directly
     - cp .ci/keys/deploy_key /tmp/deploy_key
     - chmod 600 /tmp/deploy_key
     - ssh-add /tmp/deploy_key
