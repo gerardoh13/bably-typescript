@@ -17,9 +17,11 @@ export const BEAMS_INSTANCE_ID = process.env.BEAMS_INSTANCE_ID;
 export const BEAMS_SECRET_KEY = process.env.BEAMS_SECRET_KEY;
 
 export function getDatabaseUri() {
-  return process.env.NODE_ENV === "test"
-    ? "bably2_test"
-    : process.env.DATABASE_URL || "bably2";
+  if (process.env.NODE_ENV === "test") {
+    return process.env.TEST_DATABASE_URL;
+  }
+  // For production and development
+  return process.env.DATABASE_URL;
 }
 
 export const BCRYPT_WORK_FACTOR = process.env.NODE_ENV === "test" ? 1 : 12;
