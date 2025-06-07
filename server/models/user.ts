@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 import { sqlForPartialUpdate } from "../helpers/sql";
 import { NotFoundError, BadRequestError, UnauthorizedError } from "../expressError";
 
-import { BCRYPT_WORK_FACTOR } from "../config.js";
+import { BCRYPT_WORK_FACTOR } from "../config";
 
 /** Related functions for users. */
 

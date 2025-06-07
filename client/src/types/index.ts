@@ -45,10 +45,3 @@ export interface Feed extends Event {
     duration?: number; // in minutes
     fed_at: number; // Timestamp in seconds
 }
-
-// export type UserContextType = {
-//     currUser: User | null;
-//     currChild: Infant | null;
-//     setChildId: (id: string) => void;
-//     updateInfant: (id: string, data: { firstName: string; dob: string }) => Promise<void>;
-// } | undefined;

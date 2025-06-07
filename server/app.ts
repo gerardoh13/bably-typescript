@@ -51,10 +51,14 @@ app.use(function (
 
 app.listen(PORT, async function () {
   console.log(`Started on http://localhost:${PORT}`);
-  try {
-    await seed();
-    console.log("Test database seeded successfully.");
-  } catch (err) {
-    console.error("Error seeding test database:", err);
+  if (process.env.NODE_ENV !== "test") {
+    try {
+      await seed();
+      console.log("Test database seeded successfully.");
+    } catch (err) {
+      console.error("Error seeding test database:", err);
+    }
   }
 });
+
+export default app;

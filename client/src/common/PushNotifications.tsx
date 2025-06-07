@@ -1,8 +1,8 @@
 import * as PusherPushNotifications from "@pusher/push-notifications-web";
 import BablyApi from "../api";
 
-const BASE_URL =
-  import.meta.env.VITE_API_URL;
+const BASE_URL = window.location.hostname.indexOf("bably") !== -1 ? import.meta.env.VITE_API_URL : "http://localhost:8080";
+
 
 let beamsClient: PusherPushNotifications.Client | null = null;
 if (

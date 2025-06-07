@@ -46,20 +46,6 @@ function Home() {
     getActivity();
   }, [currChild?.id, changeCount]);
 
-  // useEffect(() => {
-  //   // Prevent multiple initializations of Beams
-  //   let beamsStarted = (window as any).__beamsStarted;
-  //   console.log("Beams started:", beamsStarted);
-  //   if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-  //     console.log("This is an iOS device.");
-  //     return;
-  //   } else if (currUser?.email && !beamsStarted) {
-  //     console.log("Starting Beams for user:", currUser.email);
-  //     startBeams(currUser.email);
-  //     (window as any).__beamsStarted = true;
-  //   }
-  // }, [currUser?.email]);
-
   const getMidnights = () => {
     let midnight = new Date();
     midnight.setHours(0, 0, 0, 0);

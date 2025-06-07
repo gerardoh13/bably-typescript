@@ -16,7 +16,7 @@ function SummaryCards({ feeds, totals, diapers }: SummaryCardsProps) {
     <>
       <div className="row mb-3 px-1 text-center">
         <div
-          className="col card bablyOffWhite mx-2 pointer"
+          className="col card bablyOffWhite mx-2"
         >
           <div className="card-body">
             <h4 className="card-title">Feeds</h4>
@@ -28,7 +28,7 @@ function SummaryCards({ feeds, totals, diapers }: SummaryCardsProps) {
           </div>
         </div>
         <div
-          className="col card bablyOffWhite mx-2 pointer"
+          className="col card bablyOffWhite mx-2"
         >
           <div className="card-body">
             <h4 className="card-title text-center">Diapers</h4>

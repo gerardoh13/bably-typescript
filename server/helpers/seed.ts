@@ -1,6 +1,6 @@
 import { db } from '../db';
 import bcrypt from "bcrypt";
-import { BCRYPT_WORK_FACTOR } from "../config.js";
+import { BCRYPT_WORK_FACTOR } from "../config";
 
 export async function seed() {
     console.log("Seeding database...");

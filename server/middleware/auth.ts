@@ -7,6 +7,9 @@ import { SECRET_KEY } from "../config";
 import { UnauthorizedError } from "../expressError";
 import { NextFunction, Request, Response } from 'express';
 
+if (!SECRET_KEY) {
+  throw new Error("SECRET_KEY must be set in order to use authentication middleware");
+}
 
 /** Middleware: Authenticate user.
  *
@@ -21,7 +24,7 @@ export function authenticateJWT(req: Request, res: Response, next: NextFunction)
     const authHeader = req.headers && req.headers.authorization;
     if (authHeader) {
       const token = authHeader.replace(/^[Bb]earer /, "").trim();
-      res.locals.user = jwt.verify(token, SECRET_KEY);
+      res.locals.user = jwt.verify(token, SECRET_KEY as string);
 
     }
     return next();
