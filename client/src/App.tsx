@@ -35,6 +35,8 @@ function App() {
           console.log(err);
           setCurrUser(null);
         }
+      } else {
+        setLoading(false);
       }
     }
     setLoading(true);
@@ -62,6 +64,7 @@ function App() {
       let userToken = await BablyApi.login(data);
       if (userToken) {
         setToken(userToken);
+        BablyApi.token = userToken;
         let { email } = decodeToken(userToken) as { email: string };
         if (email !== "demo@demo.com") startBeams(email);
         return { valid: true };
@@ -77,6 +80,7 @@ function App() {
     try {
       let userToken = await BablyApi.registerUser(data);
       setToken(userToken);
+      BablyApi.token = userToken;
       let { email } = decodeToken(userToken) as { email: string };
       startBeams(email);
       console.log("Beams started for user:", email);

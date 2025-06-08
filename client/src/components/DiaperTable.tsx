@@ -3,17 +3,18 @@ import type { Diaper } from "../types";
 import DiaperForm from "../common/DiaperForm";
 import BablyApi from "../api";
 import ConfirmModal from "../common/ConfirmModal";
-import type { Infant } from "../types";
+import type { Infant, User } from "../types";
 
 type DiaperTableProps = {
   diapers: Diaper[];
   toDateStr: (timestamp: number) => string;
   setCurrEvent?: (event: Diaper) => void;
   currChild: Infant;
+  currUser?: User
   setChangeCount: React.Dispatch<React.SetStateAction<number>>;
 };
 
-function DiaperTable({ diapers, toDateStr, currChild, setChangeCount }: DiaperTableProps) {
+function DiaperTable({ diapers, toDateStr, currChild, setChangeCount, currUser }: DiaperTableProps) {
   const [showMore, setShowMore] = useState("d-none");
   const [showDiaperForm, setShowDiaperForm] = useState(false);
   const [currEvent, setCurrEvent] = useState<Diaper | undefined>();
@@ -57,6 +58,7 @@ function DiaperTable({ diapers, toDateStr, currChild, setChangeCount }: DiaperTa
   };
 
   const handleClick = (diaper: Diaper) => {
+    if (!currUser?.crud) return;
     setCurrEvent(diaper)
     setShowDiaperForm(true)
   }
