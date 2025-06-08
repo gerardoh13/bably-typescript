@@ -3,19 +3,18 @@ import type { Feed } from "../types";
 import FeedForm from "../common/FeedForm";
 import BablyApi from "../api";
 import ConfirmModal from "../common/ConfirmModal";
-import type { Infant, User } from "../types";
+import type { Infant } from "../types";
 
 type FeedTableProps = {
   feeds: Feed[];
   toDateStr: (timestamp: number) => string;
   setCurrEvent?: (event: Feed) => void;
   currChild: Infant;
-  currUser?: User
   setChangeCount: React.Dispatch<React.SetStateAction<number>>;
 };
 
 
-function FeedTable({ feeds, toDateStr, currChild, setChangeCount, currUser }: FeedTableProps) {
+function FeedTable({ feeds, toDateStr, currChild, setChangeCount }: FeedTableProps) {
   const [showMore, setShowMore] = useState("d-none");
   const [showFeedForm, setShowFeedForm] = useState(false);
   const [currEvent, setCurrEvent] = useState<Feed | undefined>();
@@ -61,7 +60,7 @@ function FeedTable({ feeds, toDateStr, currChild, setChangeCount, currUser }: Fe
   };
 
   const handleClick = (feed: Feed) => {
-    if (!currUser?.crud) return;
+    if (!currChild?.crud) return;
     setCurrEvent(feed)
     setShowFeedForm(true)
   }

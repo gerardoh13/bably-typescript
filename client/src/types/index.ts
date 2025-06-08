@@ -12,7 +12,6 @@ export interface User extends Person {
     role: string;
     reminders: any;
     infants: Infant[];
-    crud?: boolean; // Indicates if the user has CRUD permissions
     notifyAdmin?: boolean; // Indicates if the user wants to notify the admin on changes
 }
 
@@ -29,6 +28,7 @@ export interface Infant extends Person {
     users: InfantUser[]; // Users who have access to this infant's profile
     userIsAdmin?: boolean; // Indicates if the user is an admin for this infant
     publicId?: string; // Cloudinary public ID for the infant's photo
+    crud?: boolean; // Indicates if the user has CRUD permissions
     dob: string; // Date of birth in ISO format
     gender: string
 }

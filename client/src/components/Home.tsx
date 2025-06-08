@@ -185,7 +185,7 @@ function Home() {
               totals={totals}
               diapers={diapers}
             />
-            {feeds.length && currChild ? (
+            {feeds.length && currChild && currUser ? (
               <FeedTable feeds={feeds}
                 currChild={currChild}
                 setChangeCount={setChangeCount}
@@ -203,7 +203,7 @@ function Home() {
               </div>
             )}
 
-            {diapers.length && currChild ? (
+            {diapers.length && currChild && currUser ? (
               <DiaperTable
                 diapers={diapers}
                 currChild={currChild}

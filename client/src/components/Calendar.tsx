@@ -171,7 +171,7 @@ function Calendar() {
               alert("This is a demo account. You cannot edit or delete events.");
               return;
             }
-            if (!currChild || !(currChild as any).crud) return;
+            if (!currChild?.crud) return;
             const [type, eventId] = info.event._def.publicId.split("-");
             let event;
             if (type === "feed") {
