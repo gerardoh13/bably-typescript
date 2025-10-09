@@ -15,7 +15,15 @@ import { PORT } from "./config";
 import { seed } from "./helpers/seed";
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: 'https://bablyapp.com',   // your frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
+// Ensure preflight OPTIONS requests are handled for all routes
+app.options('*', cors());
 app.use(express.json());
 app.use(authenticateJWT);
 
