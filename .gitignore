@@ -8,3 +8,4 @@ node_modules
 .ci/keys/deploy_key.pub
 *.pub
 *.pem
+deploy_key
