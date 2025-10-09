@@ -3,7 +3,7 @@ name: Deploy Backend
 on:
   push:
     branches:
-      - working_branch   # Replace with your branch name
+      - main   # Replace with your branch name
 
 jobs:
   deploy:
