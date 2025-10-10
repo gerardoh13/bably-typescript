@@ -1,53 +1,44 @@
-name: Deploy Backend
+name: Deploy to EC2
 
 on:
   push:
     branches:
-      - main   # Replace with your branch name
+      - main   # or 'working_branch' if that’s your deployment branch
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    # 1️⃣ Checkout code
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    # 2️⃣ Install dependencies (openssh, rsync)
-    - name: Install SSH & rsync
-      run: |
-        sudo apt-get update -y
-        sudo apt-get install -y openssh-client rsync
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/deploy_key
+          ssh-keyscan -H api.bablyapp.com >> ~/.ssh/known_hosts
 
-    # 3️⃣ Setup SSH key
-    - name: Setup SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/deploy_key
-        chmod 600 ~/.ssh/deploy_key
-        eval "$(ssh-agent -s)"
-        ssh-add ~/.ssh/deploy_key
-        ssh-keyscan -H api.bablyapp.com >> ~/.ssh/known_hosts
+      - name: Deploy to EC2 via rsync
+        run: |
+          echo "Deploying project to EC2..."
+          rsync -avzr --delete \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='.ci' \
+            --exclude='client' \
+            ./ ec2-user@api.bablyapp.com:/home/ec2-user/project/
 
-    # 4️⃣ Deploy files via rsync
-    - name: Sync files to EC2
-      run: |
-        rsync -avzr --delete \
-          --exclude='.git' \
-          --exclude='node_modules' \
-          --exclude='.ci' \
-          --exclude='client' \
-          ./ ec2-user@api.bablyapp.com:/home/ec2-user/project/
-
-    # 5️⃣ SSH into EC2 and run deploy commands
-    - name: Run deployment scripts on EC2
-      run: |
-        ssh ec2-user@api.bablyapp.com << 'EOF'
-          cd /home/ec2-user/project
-          sh scripts/ec2env.sh
-          sh database/import.sh
-          cd server
-          npm install
-          pm2 start --time npm -- start
-        EOF
+      - name: Restart app on EC2
+        run: |
+          ssh ec2-user@api.bablyapp.com '
+            cd /home/ec2-user/project &&
+            sh scripts/ec2env.sh &&
+            sh database/import.sh &&
+            cd server &&
+            npm install &&
+            pm2 restart all || pm2 start --time npm -- start
+          '
