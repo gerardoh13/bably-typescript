@@ -118,7 +118,7 @@ router.delete(
 );
 
 router.post(
-  "/reminders/:email/",
+  "/reminders/:email",
   ensureCorrectUser,
   async function (req, res, next) {
     const { email } = req.params;
