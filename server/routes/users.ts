@@ -17,15 +17,9 @@ import { pushNotifications } from "../services";
 
 const router = express.Router();
 
-/** POST /auth/token:  { email, password } => { token }
- *
- * Returns JWT token which can be used to authenticate further requests.
- *
- * Authorization required: none
- *         // await Email.send()
+// Routes with more specific paths should come BEFORE generic routes
 
- */
-
+/** POST /token */
 router.post("/token", async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, userAuthSchema);
@@ -43,6 +37,7 @@ router.post("/token", async function (req, res, next) {
   }
 });
 
+/** POST /reset */
 router.post("/reset", async function (req, res, next) {
   try {
     const { email } = req.body;
@@ -55,6 +50,7 @@ router.post("/reset", async function (req, res, next) {
   }
 });
 
+/** POST /new-password */
 router.post("/new-password", async function (req, res, next) {
   try {
     const { token } = req.query;
@@ -73,15 +69,7 @@ router.post("/new-password", async function (req, res, next) {
   }
 });
 
-/** POST /auth/register:   { user } => { token }
- *
- * user must include { email, password, firstName  }
- *
- * Returns JWT token which can be used to authenticate further requests.
- *
- * Authorization required: none
- */
-
+/** POST /register */
 router.post("/register", async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, userNewSchema);
@@ -98,37 +86,7 @@ router.post("/register", async function (req, res, next) {
   }
 });
 
-/** GET /[email] => { user }
- *
- * Returns { id, email, firstName, infants }
- *   where infants is {  }
- *
- * Authorization required: same user-as-:email
- **/
-
-router.get("/:email", ensureCorrectUserAllowDemo, async function (req, res, next) {
-  try {
-    const user = await User.get(req.params.email);
-    res.json({ user });
-  } catch (err) {
-    return next(err);
-  }
-});
-
-router.patch(
-  "/reminders/:email",
-  ensureCorrectUser,
-  async function (req, res, next) {
-    const { email } = req.params;
-    try {
-      await User.updateReminders(email, req.body);
-      res.json({ updated: true });
-    } catch (err) {
-      return next(err);
-    }
-  }
-);
-
+/** GET /pusher/beams-auth */
 router.get("/pusher/beams-auth", function (req, res, next) {
   const userIDInQueryParam = req.query["user_id"];
   try {
@@ -143,6 +101,22 @@ router.get("/pusher/beams-auth", function (req, res, next) {
   }
 });
 
+/** PATCH /reminders/:email */
+router.patch(
+  "/reminders/:email",
+  ensureCorrectUser,
+  async function (req, res, next) {
+    const { email } = req.params;
+    try {
+      await User.updateReminders(email, req.body);
+      res.json({ updated: true });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
+
+/** PATCH /notify-admin/:userId/:infantId */
 router.patch(
   "/notify-admin/:userId/:infantId",
   async function (req, res, next) {
@@ -161,6 +135,7 @@ router.patch(
   }
 );
 
+/** PATCH /access/:userId/:infantId */
 router.patch("/access/:userId/:infantId", async function (req, res, next) {
   const { userId, infantId } = req.params;
   const { crud } = req.body;
@@ -172,11 +147,22 @@ router.patch("/access/:userId/:infantId", async function (req, res, next) {
   }
 });
 
+/** DELETE /access/:userId/:infantId */
 router.delete("/access/:userId/:infantId", async function (req, res, next) {
   const { userId, infantId } = req.params;
   try {
     await User.removeAccess(+userId, +infantId);
     res.json({ removedAccess: +userId });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+/** GET /:email - Generic email route (must come LAST) */
+router.get("/:email", ensureCorrectUserAllowDemo, async function (req, res, next) {
+  try {
+    const user = await User.get(req.params.email);
+    res.json({ user });
   } catch (err) {
     return next(err);
   }
