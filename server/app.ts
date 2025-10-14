@@ -23,8 +23,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-// Explicitly handle preflight requests *with the same options*
-
 app.use(express.json());
 app.use(authenticateJWT);
 
@@ -32,8 +30,6 @@ app.use("/users", usersRoutes);
 app.use("/infants", infantRoutes);
 app.use("/feeds", feedRoutes);
 app.use("/diapers", diaperRoutes);
-
-app.options('*', cors(corsOptions));
 
 /** Handle 404 errors -- this matches everything */
 app.use(function (req, res, next) {
