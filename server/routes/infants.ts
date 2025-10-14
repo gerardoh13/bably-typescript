@@ -60,7 +60,7 @@ router.get("/:infantId", ensureLoggedInAllowDemo, async function (req, res, next
   }
 });
 
-router.patch("/:infantId/", ensureLoggedIn, async function (req, res, next) {
+router.patch("/:infantId", ensureLoggedIn, async function (req, res, next) {
   const { infantId } = req.params;
   try {
     const validator = jsonschema.validate(req.body, infantNewSchema);
