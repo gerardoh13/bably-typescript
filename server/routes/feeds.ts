@@ -1,9 +1,6 @@
 "use strict";
-
 /** Routes for feeds. */
-
 import jsonschema from "jsonschema";
-
 import Feed from "../models/feed";
 import Infant from "../models/infant";
 import Notification from "../models/notification";
@@ -12,18 +9,25 @@ import { ensureLoggedIn, ensureCorrectUser } from "../middleware/auth";
 import feedNewSchema from "../schemas/feedNew.json";
 import feedUpdateSchema from "../schemas/feedUpdate.json";
 import { BadRequestError, UnauthorizedError } from "../expressError";
-
 const router = express.Router();
 
-/** POST /:   { infant } => { infant }
- *
- * feed must include { firstName, dob, gender }
- *
- * Returns { id, firstName, dob, gender, publicId }
- *
- * Authorization required: none
- */
+/** POST /reminders/:email - Schedule a feed reminder */
+router.post(
+  "/reminders/:email",
+  ensureCorrectUser,
+  async function (req, res, next) {
+    const { email } = req.params;
+    const { timestamp, infant } = req.body;
+    try {
+      Notification.scheduleFeedReminder(timestamp, infant, email);
+      res.json({ scheduled: true });
+    } catch (err) {
+      return next(err);
+    }
+  }
+);
 
+/** POST / - Create a new feed */
 router.post("/", ensureLoggedIn, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, feedNewSchema);
@@ -52,6 +56,7 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
   }
 });
 
+/** GET /:infant_id/:id - Get a specific feed */
 router.get("/:infant_id/:id", ensureLoggedIn, async function (req, res, next) {
   const { infant_id, id } = req.params;
   try {
@@ -69,6 +74,7 @@ router.get("/:infant_id/:id", ensureLoggedIn, async function (req, res, next) {
   }
 });
 
+/** PATCH /:infant_id/:feed_id - Update a feed */
 router.patch(
   "/:infant_id/:feed_id",
   ensureLoggedIn,
@@ -95,12 +101,12 @@ router.patch(
   }
 );
 
+/** DELETE /:infant_id/:feed_id - Delete a feed */
 router.delete(
   "/:infant_id/:feed_id",
   ensureLoggedIn,
   async function (req, res, next) {
     const { infant_id, feed_id } = req.params;
-
     try {
       const userAccess = await Infant.checkAuthorized(
         res.locals.user.email,
@@ -111,21 +117,6 @@ router.delete(
         await Feed.delete(+feed_id);
         res.json({ deleted: feed_id });
       }
-    } catch (err) {
-      return next(err);
-    }
-  }
-);
-
-router.post(
-  "/reminders/:email",
-  ensureCorrectUser,
-  async function (req, res, next) {
-    const { email } = req.params;
-    const { timestamp, infant } = req.body;
-    try {
-      Notification.scheduleFeedReminder(timestamp, infant, email);
-      res.json({ scheduled: true });
     } catch (err) {
       return next(err);
     }
