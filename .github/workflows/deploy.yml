@@ -3,7 +3,7 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - main   # or 'working_branch' if that’s your deployment branch
+      - main   # change if your deploy branch is different
 
 jobs:
   deploy:
@@ -13,32 +13,35 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up SSH
+      - name: Deploy to EC2
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          DEPLOY_HOST: api.bablyapp.com
+          DEPLOY_USER: ec2-user
+          DEPLOY_PATH: /home/ec2-user/project
         run: |
+          # Set up SSH
           mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/deploy_key
+          echo "$DEPLOY_KEY" | base64 --decode > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          eval "$(ssh-agent -s)"
-          ssh-add ~/.ssh/deploy_key
-          ssh-keyscan -H api.bablyapp.com >> ~/.ssh/known_hosts
-
-      - name: Deploy to EC2 via rsync
-        run: |
+          ssh-keyscan -H $DEPLOY_HOST >> ~/.ssh/known_hosts 2>/dev/null
+          
+          # Deploy via rsync
           echo "Deploying project to EC2..."
-          rsync -avzr --delete \
+          rsync -avzr -e "ssh -i ~/.ssh/deploy_key" --delete \
             --exclude='.git' \
             --exclude='node_modules' \
             --exclude='.ci' \
             --exclude='client' \
-            ./ ec2-user@api.bablyapp.com:/home/ec2-user/project/
-
-      - name: Restart app on EC2
-        run: |
-          ssh ec2-user@api.bablyapp.com '
-            cd /home/ec2-user/project &&
+            ./ $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/
+          
+          # Restart app on EC2
+          echo "Restarting application..."
+          ssh -i ~/.ssh/deploy_key $DEPLOY_USER@$DEPLOY_HOST "
+            cd $DEPLOY_PATH &&
             sh scripts/ec2env.sh &&
             sh database/import.sh &&
             cd server &&
             npm install &&
             pm2 restart all || pm2 start --time npm -- start
-          '
+          "
